@@ -1,0 +1,38 @@
+public class Beverage {
+	public double cost() {
+		double cost = 0.0;
+		if (hasMilk()) 
+			cost += costOfMilk;
+		else if (hasSoy())
+			cost += costOfSoy;
+
+		if (hasMocha())
+			cost += costOfMocha;
+		
+		if (hasWhip())
+			cost += costOfWhip;
+
+		return cost;
+	}
+
+}
+
+
+
+
+public class DarkRoast extends Beverage{
+
+	public DarkRoast() {
+		description = "Most Excellent Dark Roast";
+	}
+
+
+	public double cost() {
+		cost = super.cost();
+		cost += costOfDarkRoast;
+		return cost;
+	}
+
+
+
+}

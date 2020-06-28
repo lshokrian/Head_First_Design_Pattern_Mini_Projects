@@ -1,0 +1,133 @@
+public class ChocolateBoiler {
+	private boolean empty;
+	private boolean boiled;
+	private static ChocolateBoiler uniqueInstance;
+
+	private	ChcolateBoiler() {
+		empty = true;
+		boiled = false;
+	}
+
+	public static ChocolateBoiler getInstance() {
+		if (uniqueInstance == null) {
+			uniqueInstance = new ChocolateBoiler();
+		}
+		return uniqueInstance;
+	}
+
+	public void fill() {
+		if (isEmpty()) {
+			empty = false;
+			boiled = false;
+			// fill the boiler with a milk/chocolate mixture
+		}
+	}
+	
+	// rest of Chcolate Boiler code...
+}
+
+
+
+Handle Multithreading -> above code could produce 2 instances
+
+Solution 1: 
+Synchronized - make the getInstance a synchronized method which required the method must fully complete before getting called again. However, this has a lot of overhead "can decrease performance by a factor of 100", so if you know that getInstance won't get called often than this is a good option
+
+
+
+public class ChocolateBoiler {
+	private boolean empty;
+	private boolean boiled;
+	private static ChocolateBoiler uniqueInstance;
+
+	private	ChcolateBoiler() {
+		empty = true;
+		boiled = false;
+	}
+
+	public static synchronized ChocolateBoiler getInstance() {
+		if (uniqueInstance == null) {
+			uniqueInstance = new ChocolateBoiler();
+		}
+		return uniqueInstance;
+	}
+
+	public void fill() {
+		if (isEmpty()) {
+			empty = false;
+			boiled = false;
+			// fill the boiler with a milk/chocolate mixture
+		}
+	}
+	
+	// rest of Chcolate Boiler code...
+}
+
+
+
+Solution 2: 
+Create the instance in a static initialization. This gaurantees the code to be thread safe. The downside to this is that this is under the assumption that an instance WILL always be created. This is not a lazy creation, but eager one. This gaurantees the instance will be created before any thread accesses the static uniqueInstance variable.
+
+
+public class ChocolateBoiler {
+	private boolean empty;
+	private boolean boiled;
+	private static ChocolateBoiler uniqueInstance = new ChocolateBoiler;
+
+	private	ChcolateBoiler() {
+		empty = true;
+		boiled = false;
+	}
+
+	public static ChocolateBoiler getInstance() {
+		return uniqueInstance;
+	}
+
+	public void fill() {
+		if (isEmpty()) {
+			empty = false;
+			boiled = false;
+			// fill the boiler with a milk/chocolate mixture
+		}
+	}
+	
+	// rest of Chcolate Boiler code...
+}
+
+
+Solution 3: "double-checked locking" 
+Check if an instance is created, if not, THEN we synchronize so that only the first time go through getInstance do we synchronize
+The volatile keyword "ensures that multiple threads handle the uniqueInstance correctly when it is being initialized to the Singleton/Chocolate Boiler instance.
+
+public class ChocolateBoiler {
+	private boolean empty;
+	private boolean boiled;
+	private volatile* static ChocolateBoiler uniqueInstance;
+
+	private	ChcolateBoiler() {
+		empty = true;
+		boiled = false;
+	}
+
+	public static synchronized ChocolateBoiler getInstance() {
+		if (uniqueInstance == null) {
+			synchronized (ChocolateBoiler.class) {
+				if (uniqueInstance == null) {
+					uniqueInstance = new ChocolateBoiler();	
+				}
+			}	
+
+		}
+		return uniqueInstance;
+	}
+
+	public void fill() {
+		if (isEmpty()) {
+			empty = false;
+			boiled = false;
+			// fill the boiler with a milk/chocolate mixture
+		}
+	}
+	
+	// rest of Chcolate Boiler code...
+} 
